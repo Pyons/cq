@@ -180,6 +180,26 @@ E.g. this is pretty fast
 
     cat data.yaml | cq -o json --no-pretty | jq
 
+
+
+### Building
+
+All scripts for building this project are located in the `package` folder.
+
+Prerequisite:
+
+* Clojure
+* GraalVM
+    - With native-image in $PATH
+
+1. Clone this repo
+2. Execute `package/package.sh`
+    - This builds the jvm version for each platform
+3. Execute `package/build-native.sh`
+    - This uses GraalVM to create a native binary
+    - The binary can be found under `target/cq`
+
+
 ## TODO
 
 - maybe [HTML](https://github.com/davidsantiago/hickory) & Parquet support
