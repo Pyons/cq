@@ -10,7 +10,7 @@ The joy of Clojure's threading macros, but on the command line!
 [![License](https://img.shields.io/badge/license-EPL--2.0-blue)](LICENSE)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmarkus-wa%2Fcq.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmarkus-wa%2Fcq?ref=badge_shield)
 
-![image](https://user-images.githubusercontent.com/5138316/132836292-e4c9e2fc-aa59-4431-a869-e2f7930ae1fd.png)
+![image](https://user-images.githubusercontent.com/5138316/214540308-414fb004-0b3f-4377-b3a1-239cb8c7d3fb.png)
 
 ## Installation
 
@@ -28,7 +28,7 @@ The joy of Clojure's threading macros, but on the command line!
 
 ## Rationale
 
-While there are a few similar tools out there (such as jq, jet or babashka), cq tries to resolve some of their shortcomings such as having to learn custom query languages, lacking powerful data transformation libraries or quick and _easy_ (yes I said the e word) handling of many input and output formats.
+While there are a few similar, amazing tools out there (such as `jq`, `jet` or `babashka`), `cq` tries to resolve some of their shortcomings such as having to learn custom query languages, lacking powerful data transformation libraries or quick and _easy_ (yes I said the e word) handling of many input and output formats.
 
 cq aims to:
 
@@ -49,6 +49,7 @@ cq aims to:
   - CSV
   - Cognitec's Transit format
   - Text (raw and line-separated)
+  - HTML (via Hickory)
 - [Various reader macros](#reader-macros) that make writing queries easier
 - [Threading macro redirection](#threading-macro-redirection) reduces need for parentheses
 - Coloured output / syntax highlig for EDN output
@@ -73,8 +74,8 @@ Examples
   printf 'http://example.com/some/path' | cq -i text -- '-> str/upper-case (str/split #"/") ->> (map str/reverse)'
 
 Options:
-  -i, --in FORMAT                         yaml     Input format: csv, edn, json, lines, msgpack, text, transit, yaml
-  -o, --out FORMAT                        edn      Output format: csv, edn, json, lines, msgpack, text, transit, yaml
+  -i, --in FORMAT                         yaml     Input format: csv, edn, json, lines, msgpack, text, transit, yaml, html
+  -o, --out FORMAT                        edn      Output format: csv, edn, json, lines, msgpack, text, transit, yaml, html
   -p, --[no-]pretty                                Pretty print output - default is true
       --color COLOR                       auto     When pretty printing, whether to use colors: auto, off, on - default is auto
   -c                                               Same as --color=on
@@ -98,6 +99,13 @@ By default `cq` uses [thread last (`->>`)](https://clojure.org/guides/threading_
 ```bash
 $ echo '{"a": {"b": [1, 2, 3]}}' | cq ':a :b (map inc)'
 (2 3 4)
+```
+
+You can use `clojure.instant` (alias `inst`) to parse timestamps.
+
+```bash
+$ echo '{"a": "2023-03-11T03:01:11.000Z"}' | cq :a inst/read-instant-timestamp
+#inst "2023-03-11T03:01:11.000-00:00"
 ```
 
 Using `#|` you can use the current value as `.`.
@@ -156,6 +164,7 @@ Currently supported threading operators for redirection:
 | `medley` | `medley.core` | `m` | `(m/mak-kv (fn [k v] [v k]))` |
 | `com.rpl/specter` | `com.rpl.specter` | `s` | `(s/transform [MAP-VALS MAP-VALS] inc)` |
 | `camel-snake-kebab` | `camel-snake-kebab.core` | `csk`  | `csk/->SCREAMING_SNAKE_CASE` |
+| `clojure.instant` | `clojure.instant` | `inst`  | `inst/read-instant-timestamp` |
 
 
 ### Reader Macros
@@ -202,7 +211,7 @@ Prerequisite:
 
 ## TODO
 
-- maybe [HTML](https://github.com/davidsantiago/hickory) & Parquet support
+- maybe Parquet support
 
 ## Acknowledgements
 
