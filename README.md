@@ -4,6 +4,8 @@ Command-line Data Processor for EDN, YAML, JSON, XML and other data formats.
 
 The joy of Clojure's threading macros, but on the command line!
 
+May or may not have invented the Hash-Pipe `#|` operator 🍁 (citation needed)
+
 [![CI / CD](https://github.com/markus-wa/cq/actions/workflows/cicd.yaml/badge.svg)](https://github.com/markus-wa/cq/actions/workflows/cicd.yaml)
 [![codecov](https://codecov.io/gh/markus-wa/cq/branch/main/graph/badge.svg?token=zGovO2H0bm)](https://codecov.io/gh/markus-wa/cq)
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/markus-wa/cq)](https://github.com/markus-wa/cq/releases)
@@ -17,7 +19,9 @@ The joy of Clojure's threading macros, but on the command line!
 ### Homebrew
 
     brew install markus-wa/brew/cq
-
+### Windows / Scoop
+    scoop bucket add scoop-clojure
+    scoop install scoop-clojure/cq
 ### Manual
 
 1. Download the latest version for your OS from the [releases](https://github.com/markus-wa/cq/releases) page.
@@ -58,7 +62,10 @@ cq aims to:
   - [specter](https://github.com/redplanetlabs/specter) - `(s/...)`
   - [medley](https://github.com/weavejester/medley) - `(m/...)`
   - [camel-snake-kebab](https://clj-commons.org/camel-snake-kebab/) - `(csk/...)`
-  - [xml-in](https://github.com/tolitius/xml-in) - `(xml/...)`
+  - [xml-in](https://github.com/tolitius/xml-in) - `(xml-in/...)`
+  - [data.json](https://github.com/clojure/data.json) - `(json/...)`
+  - [data.csv](https://github.com/clojure/data.csv) - `(csv/...)`
+  - [data.xml](https://github.com/clojure/data.xml) - `(xml/...)`
 
 ## Usage
 
@@ -160,11 +167,14 @@ Currently supported threading operators for redirection:
 
 | Library | Namespace | Alias | Example Query |
 | ------- | --------- | ----- | ------- |
-| `tolitius/xml-in` | `xml-in.core` | `xml` | `#\| (xml/find-all . [:universe :system :solar :planet])` |
+| `tolitius/xml-in` | `xml-in.core` | `xml-in` | `#\| (xml-in/find-all . [:universe :system :solar :planet])` |
 | `medley` | `medley.core` | `m` | `(m/mak-kv (fn [k v] [v k]))` |
 | `com.rpl/specter` | `com.rpl.specter` | `s` | `(s/transform [MAP-VALS MAP-VALS] inc)` |
 | `camel-snake-kebab` | `camel-snake-kebab.core` | `csk`  | `csk/->SCREAMING_SNAKE_CASE` |
 | `clojure.instant` | `clojure.instant` | `inst`  | `inst/read-instant-timestamp` |
+| `clojure.data.csv` | `clojure.data.csv` | `csv`  | `csv/read-csv` |
+| `clojure.data.json` | `clojure.data.json` | `json`  | `json/read-str` |
+| `clojure.data.xml` | `clojure.data.xml` | `xml`  | `xml/parse-str` |
 
 
 ### Reader Macros
@@ -174,9 +184,9 @@ This table explains the different reader macros provided by `cq`.
 
 | Reader Macro | Description | Interpolates to | Example |
 | ------------ | ----------- | --------------- | ------- |
-| `#\| <f>`  | Use the current value as `.` | `((fn [.] <f>))` | `#\| (< 5 . 10)` |
+| `#\| <f>` | Hash-Pipe 🍁: Use the current value as `.` | `((fn [.] <f>))` | `#\| (< 5 . 10)` |
 | `#map <f>` | Map elements of a seq | `(map (fn [.] <f>))` | `#map {:a (:a .) :first-child (-> . :children first)}` |
-| `#& (<d> <f...>)` | Destructure into vars | `((fn [.] (let [<d> .] <f>)` | `#& ({:keys [a b c]} [a b c]})` |
+| `#& (<d> <f...>)` | Destructor: Destructure into vars | `((fn [.] (let [<d> .] <f>)` | `#& ({:keys [a b c]} [a b c]})` |
 | `#f <f>` | Anonymous function, returns value of f, not evaluation of f | `#(do <f>)` | `(map-kv #f [%2 %1])` |
 
 ### Tips & Tricks
